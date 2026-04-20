@@ -65,6 +65,22 @@
   .btn-edit { background: #f0f0f0; color: #555; }
   .btn-del { background: #ffe4e8; color: #ff4d6d; }
   .empty { font-size: 0.85rem; color: #bbb; padding: 0.4rem 0; }
+  .adj-row {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0 0.55rem; border-bottom: 1px solid #f3f3f3;
+  }
+  .adj-input {
+    flex: 1; padding: 0.38rem 0.6rem;
+    border: 1.5px solid #e0e0e0; border-radius: 8px;
+    font-size: 0.88rem; font-family: inherit; outline: none;
+    transition: border-color 0.2s; color: #333;
+  }
+  .adj-input:focus { border-color: #6c63ff; }
+  .adj-btn {
+    border: none; border-radius: 8px; padding: 0.38rem 0.65rem;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    color: #fff; white-space: nowrap;
+  }
   .total-row {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 0.7rem; padding-top: 0.6rem;
@@ -232,7 +248,22 @@ function renderList(elId, list, type, color, plus=false, minus=false) {
         <button class="sm-btn btn-edit" onclick="openEdit('${type}',${item.id})">編集</button>
         <button class="sm-btn btn-del" onclick="deleteItem('${type}',${item.id})">削除</button>
       </div>
-    </div>`).join('');
+    </div>
+    ${type==='balance' ? `
+    <div class="adj-row">
+      <input class="adj-input" type="number" inputmode="numeric" id="adj_${item.id}" placeholder="差額を入力（例：500）">
+      <button class="adj-btn" style="background:#4ecdc4" onclick="applyAdj('${type}',${item.id},1)">＋</button>
+      <button class="adj-btn" style="background:#ff4d6d" onclick="applyAdj('${type}',${item.id},-1)">－</button>
+    </div>` : ''}`).join('');
+}
+
+function applyAdj(type, id, sign) {
+  const input = document.getElementById('adj_' + id);
+  const val = parseInt(input.value.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(val) || val <= 0) { input.focus(); return; }
+  const key = type==='balance'?'balances':type==='income'?'incomes':'expenses';
+  data[key] = data[key].map(x => x.id===id ? {...x, amount: Math.max(0, x.amount + sign * val)} : x);
+  save(); render();
 }
 
 function deleteItem(type, id) {
