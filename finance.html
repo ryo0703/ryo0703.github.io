@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="資金管理">
+<link rel="apple-touch-icon" href="icon.JPG">
+<title>資金管理</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html {
+    background: #f0f0f8;
+  }
+  body {
+    font-family: 'Hiragino Sans', sans-serif;
+    background: linear-gradient(145deg, #f0f0f8, #e8eaf6);
+    min-height: 100vh;
+    padding: env(safe-area-inset-top, 20px) 1rem 4rem;
+  }
+  h1 { font-size: 1.3rem; font-weight: 800; color: #1a1a2e; }
+  .subtitle { font-size: 0.8rem; color: #888; margin: 0.2rem 0 1.2rem; }
+
+  .net-card {
+    border-radius: 20px;
+    padding: 1.4rem;
+    margin-bottom: 1.2rem;
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(108,99,255,0.25);
+  }
+  .net-card.positive { background: linear-gradient(135deg, #6c63ff, #4ecdc4); }
+  .net-card.negative { background: linear-gradient(135deg, #ff4d6d, #f97316); }
+  .net-label { font-size: 0.72rem; opacity: 0.8; margin-bottom: 0.3rem; letter-spacing: 0.04em; }
+  .net-amount { font-size: 2rem; font-weight: 800; }
+  .net-formula { font-size: 0.75rem; opacity: 0.7; margin-top: 0.5rem; }
+
+  .section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+  .sec-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.8rem;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+    color: #aaa; text-transform: uppercase;
+  }
+  .add-btn {
+    border: none; border-radius: 7px; padding: 0.28rem 0.65rem;
+    font-size: 0.75rem; font-weight: 700; cursor: pointer;
+    font-family: inherit; color: #fff;
+  }
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0; border-bottom: 1px solid #f3f3f3;
+  }
+  .row:last-of-type { border-bottom: none; }
+  .row-label { font-size: 0.88rem; color: #333; }
+  .row-right { display: flex; align-items: center; gap: 0.45rem; }
+  .row-amount { font-weight: 600; font-size: 0.88rem; }
+  .sm-btn {
+    border: none; border-radius: 6px; padding: 0.25rem 0.55rem;
+    font-size: 0.7rem; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-edit { background: #f0f0f0; color: #555; }
+  .btn-del { background: #ffe4e8; color: #ff4d6d; }
+  .empty { font-size: 0.85rem; color: #bbb; padding: 0.4rem 0; }
+  .adj-row {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0 0.55rem; border-bottom: 1px solid #f3f3f3;
+  }
+  .adj-input {
+    flex: 1; padding: 0.38rem 0.6rem;
+    border: 1.5px solid #e0e0e0; border-radius: 8px;
+    font-size: 0.88rem; font-family: inherit; outline: none;
+    transition: border-color 0.2s; color: #333;
+  }
+  .adj-input:focus { border-color: #6c63ff; }
+  .adj-btn {
+    border: none; border-radius: 8px; padding: 0.38rem 0.65rem;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    color: #fff; white-space: nowrap;
+  }
+  .total-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 0.7rem; padding-top: 0.6rem;
+    border-top: 2px solid #e8e8f0;
+  }
+  .total-label { font-size: 0.85rem; font-weight: 700; color: #555; }
+  .total-amount { font-size: 1.05rem; font-weight: 800; }
+
+  /* Modal */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 100;
+    align-items: flex-end; justify-content: center;
+  }
+  .overlay.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: 20px 20px 0 0;
+    padding: 1.5rem 1.4rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    width: 100%; max-width: 480px;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+  .modal-title { font-weight: 700; font-size: 1rem; color: #1a1a2e; }
+  .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888; }
+  .field-label { font-size: 0.75rem; color: #888; margin-bottom: 0.3rem; display: block; }
+  .field { margin-bottom: 0.8rem; }
+  input[type=text], input[type=number] {
+    width: 100%; padding: 0.65rem 0.9rem;
+    border: 1.5px solid #e0e0e0; border-radius: 10px;
+    font-size: 1rem; font-family: inherit; outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: #6c63ff; }
+  .submit-btn {
+    width: 100%; padding: 0.75rem; border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
+    color: #fff; margin-top: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>💰 資金管理</h1>
+<p class="subtitle">収支をリアルタイムで確認</p>
+
+<div class="net-card positive" id="netCard">
+  <div class="net-label">予定支出差引後残高</div>
+  <div class="net-amount" id="netAmount"></div>
+  <div class="net-formula" id="netFormula"></div>
+</div>
+
+<div class="section">
+  <div class="sec-header">
+    <span>Ⅰ　現在の総残高</span>
+    <button class="add-btn" style="background:#6c63ff" onclick="openModal('balance')">＋ 追加</button>
+  </div>
+  <div id="balanceList"></div>
+  <div class="total-row">
+    <span class="total-label">総残高</span>
+    <span class="total-amount" style="color:#6c63ff" id="totalBalance"></span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-header">
+    <span>Ⅱ　予定収入</span>
+    <button class="add-btn" style="background:#4ecdc4" onclick="openModal('income')">＋ 追加</button>
+  </div>
+  <div id="incomeList"></div>
+  <div id="incomeTotalRow" class="total-row" style="display:none">
+    <span class="total-label">予定収入額</span>
+    <span class="total-amount" style="color:#4ecdc4" id="totalIncome"></span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-header">
+    <span>Ⅲ　予定支出</span>
+    <button class="add-btn" style="background:#ff4d6d" onclick="openModal('expense')">＋ 追加</button>
+  </div>
+  <div id="expenseList"></div>
+  <div id="expenseTotalRow" class="total-row" style="display:none">
+    <span class="total-label">予定支出額</span>
+    <span class="total-amount" style="color:#ff4d6d" id="totalExpense"></span>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" style="padding-bottom:1.5rem">
+    <div class="modal-header" style="margin-bottom:0.8rem">
+      <span class="modal-title">確認</span>
+    </div>
+    <p id="confirmMsg" style="font-size:0.95rem;color:#333;margin-bottom:1.2rem;line-height:1.5"></p>
+    <div style="display:flex;gap:0.6rem">
+      <button id="confirmCancel" style="flex:1;padding:0.7rem;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;font-size:0.95rem;font-weight:600;font-family:inherit;color:#555;cursor:pointer">キャンセル</button>
+      <button id="confirmOk" style="flex:1;padding:0.7rem;border:none;border-radius:10px;background:#ff4d6d;font-size:0.95rem;font-weight:700;font-family:inherit;color:#fff;cursor:pointer">削除</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">追加</span>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="field">
+      <label class="field-label">名前</label>
+      <input type="text" id="fLabel" placeholder="例：現金">
+    </div>
+    <div class="field" id="dateField">
+      <label class="field-label">日付（任意）</label>
+      <input type="text" id="fDate" placeholder="例：4月25日">
+    </div>
+    <div class="field">
+      <label class="field-label">金額（円）</label>
+      <input type="number" id="fAmount" placeholder="10000" inputmode="numeric">
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">追加</button>
+  </div>
+</div>
+
+<script>
+const DEFAULTS = {
+  balances: [
+    {id:1, label:"現金", amount:107},
+    {id:2, label:"三井住友銀行", amount:17247},
+    {id:3, label:"PayPay", amount:0},
+  ],
+  incomes: [
+    {id:4, label:"お小遣い", date:"5月1日", amount:10000},
+  ],
+  expenses: [
+    {id:5, label:"ライブ", date:"未定", amount:16880},
+  ]
+};
+
+let data = JSON.parse(localStorage.getItem('financeData') || 'null') || DEFAULTS;
+let modalType = null, editId = null;
+
+function save() { localStorage.setItem('financeData', JSON.stringify(data)); }
+function fmt(n) { return n.toLocaleString('ja-JP') + '円'; }
+
+function render() {
+  const totB = data.balances.reduce((s,x)=>s+x.amount,0);
+  const totI = data.incomes.reduce((s,x)=>s+x.amount,0);
+  const totE = data.expenses.reduce((s,x)=>s+x.amount,0);
+  const net = totB - totE;
+
+  const card = document.getElementById('netCard');
+  card.className = 'net-card ' + (net >= 0 ? 'positive' : 'negative');
+  document.getElementById('netAmount').textContent = fmt(net);
+  document.getElementById('netFormula').textContent = fmt(totB) + ' − ' + fmt(totE);
+
+  document.getElementById('totalBalance').textContent = fmt(totB);
+
+  const teRow = document.getElementById('expenseTotalRow');
+  if (totE > 0) {
+    teRow.style.display = 'flex';
+    document.getElementById('totalExpense').textContent = '−' + fmt(totE);
+  } else teRow.style.display = 'none';
+
+  const tiRow = document.getElementById('incomeTotalRow');
+  if (totI > 0) {
+    tiRow.style.display = 'flex';
+    document.getElementById('totalIncome').textContent = '+' + fmt(totI);
+  } else tiRow.style.display = 'none';
+
+  renderList('balanceList', data.balances, 'balance', '#1a1a2e');
+  renderList('incomeList', data.incomes, 'income', '#4ecdc4', true);
+  renderList('expenseList', data.expenses, 'expense', '#ff4d6d', false, true);
+}
+
+function renderList(elId, list, type, color, plus=false, minus=false) {
+  const el = document.getElementById(elId);
+  if (!list.length) { el.innerHTML = '<div class="empty">なし</div>'; return; }
+  el.innerHTML = list.map(item => `
+    <div class="row">
+      <span class="row-label">${item.label}${item.date ? '（'+item.date+'）' : ''}</span>
+      <div class="row-right">
+        <span class="row-amount" style="color:${color}">${minus?'−':plus?'+':''}${fmt(item.amount)}</span>
+        <button class="sm-btn btn-edit" onclick="openEdit('${type}',${item.id})">編集</button>
+        <button class="sm-btn btn-del" onclick="deleteItem('${type}',${item.id})">削除</button>
+      </div>
+    </div>
+    ${type==='balance' ? `
+    <div class="adj-row">
+      <input class="adj-input" type="number" inputmode="numeric" id="adj_${item.id}" placeholder="差額を入力（例：500）">
+      <button class="adj-btn" style="background:#4ecdc4" onclick="applyAdj('${type}',${item.id},1)">＋</button>
+      <button class="adj-btn" style="background:#ff4d6d" onclick="applyAdj('${type}',${item.id},-1)">－</button>
+    </div>` : ''}`).join('');
+}
+
+function applyAdj(type, id, sign) {
+  const input = document.getElementById('adj_' + id);
+  const val = parseInt(input.value.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(val) || val <= 0) { input.focus(); return; }
+  const key = type==='balance'?'balances':type==='income'?'incomes':'expenses';
+  data[key] = data[key].map(x => x.id===id ? {...x, amount: Math.max(0, x.amount + sign * val)} : x);
+  save(); render();
+}
+
+function deleteItem(type, id) {
+  const key = type==='balance'?'balances':type==='income'?'incomes':'expenses';
+  const item = data[key].find(x=>x.id===id);
+  showConfirm(`「${item.label}」を削除しますか？`, () => {
+    data[key] = data[key].filter(x=>x.id!==id);
+    save(); render();
+  });
+}
+
+function showConfirm(message, onOk) {
+  document.getElementById('confirmMsg').textContent = message;
+  document.getElementById('confirmOverlay').classList.add('show');
+  document.getElementById('confirmOk').onclick = () => {
+    document.getElementById('confirmOverlay').classList.remove('show');
+    onOk();
+  };
+  document.getElementById('confirmCancel').onclick = () => {
+    document.getElementById('confirmOverlay').classList.remove('show');
+  };
+}
+
+const typeNames = {balance:'残高', income:'収入', expense:'支出'};
+const typeColors = {balance:'#6c63ff', income:'#4ecdc4', expense:'#ff4d6d'};
+
+function openModal(type, item=null) {
+  modalType = type; editId = item?.id || null;
+  document.getElementById('modalTitle').textContent = (item?'編集：':'追加：') + typeNames[type];
+  document.getElementById('fLabel').value = item?.label || '';
+  document.getElementById('fDate').value = item?.date || '';
+  document.getElementById('fAmount').value = item?.amount || '';
+  document.getElementById('dateField').style.display = type==='balance' ? 'none' : '';
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = item ? '更新' : '追加';
+  btn.style.background = typeColors[type];
+  document.getElementById('overlay').classList.add('show');
+  setTimeout(()=>document.getElementById('fLabel').focus(), 300);
+}
+
+function openEdit(type, id) {
+  const key = type==='balance'?'balances':type==='income'?'incomes':'expenses';
+  openModal(type, data[key].find(x=>x.id===id));
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('overlay')) return;
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function submitForm() {
+  const label = document.getElementById('fLabel').value.trim();
+  const amount = parseInt(document.getElementById('fAmount').value, 10);
+  const date = document.getElementById('fDate').value.trim();
+  if (!label || isNaN(amount)) { alert('名前と金額を入力してください'); return; }
+  const key = modalType==='balance'?'balances':modalType==='income'?'incomes':'expenses';
+  if (editId) {
+    data[key] = data[key].map(x => x.id===editId ? {...x, label, amount, date} : x);
+  } else {
+    data[key].push({id: Date.now(), label, amount, date});
+  }
+  save(); render();
+  document.getElementById('overlay').classList.remove('show');
+}
+
+render();
+</script>
+</body>
+</html>
