@@ -1249,7 +1249,7 @@ ${next ? `<p class="hint">↻ 次の分（${mdw(next)}）を自動で追加し�
   });
   document.addEventListener('input', (e) => {
     const el = e.target;
-    if (sheetEl().contains(el)) markDirty();
+    if (sheetEl().contains(el) && el.type !== 'file') markDirty();
     if (el.classList.contains('num')) formatNum(el);
     if (el.id === 'fActual') updateAdjPreview();
     if (el.classList.contains('date-in')) onDateChange(el);
