@@ -1,7 +1,7 @@
 /* 資金管理：オフライン用
    ネットにつながるときは最新版を読み込み、つながらない・遅いときは保存しておいた版で開く */
-const CACHE = 'shikin-v2';
-const CORE = ['./', './index.html', './icon.JPG'];
+const CACHE = 'shikin-v3';
+const CORE = ['./finance.html', './icon.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => Promise.all(CORE.map((u) => c.add(u).catch(() => {})))));
@@ -36,6 +36,6 @@ async function handle(e, req) {
     if (res) return res;
   } catch (_) { /* オフライン */ }
   const hit = (await cache.match(req, { ignoreSearch: true }))
-    || (req.mode === 'navigate' ? (await cache.match('./')) || (await cache.match('./index.html')) : undefined);
+    || (req.mode === 'navigate' ? await cache.match('./finance.html') : undefined);
   return hit || net;
 }
