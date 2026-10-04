@@ -89,6 +89,7 @@ html.lock,html.lock body{overflow:hidden}
 .st.ok{color:var(--teal-ink)}
 .st.warn{color:var(--orange)}
 .st.bad{color:var(--red-ink)}
+.st-sub{font-size:.72rem;font-weight:600;color:var(--muted)}
 .prow-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
 .done-btn{font-size:.74rem;font-weight:800;padding:5px 12px;border-radius:999px;border:1.5px solid currentColor}
 .done-btn.in{color:var(--teal-ink)}
@@ -267,7 +268,7 @@ html.kb .sheet-foot{padding-bottom:10px}
   /* ===== 基本設定 ===== */
   const KEY = 'shikin.v2';        // 新しい保存場所
   const OLD_KEY = 'financeData';  // 前のバージョンの保存場所（消さずに残しておく）
-  const APP_VER = '2.2';
+  const APP_VER = '2.3';
   const BACKUP_DAYS = 14;         // これ以上バックアップしていないとお知らせ
   const DAY = 86400000;
 
@@ -468,12 +469,13 @@ html.kb .sheet-foot{padding-bottom:10px}
     const t = today();
     let run = sum(data.accounts);
     const st = {};
-    let first = null;
+    let first = null, shortCount = 0;
     const undated = data.expenses.filter((x) => !x.date);
     run -= sum(undated);
     const undShort = Math.max(0, -run);
-    undated.forEach((x) => { st[x.id] = { short: undShort }; });
-    if (undShort > 0) first = { item: null, short: undShort };
+    undated.forEach((x) => { st[x.id] = { short: undShort, after: run, nextIn: null }; });
+    // 日付未定の予定支出が本当にあるときだけ「日付未定に足りない」とする（残高がマイナスなだけなら、日付つきの支出側で出す）
+    if (undated.length && undShort > 0) { first = { item: null, short: undShort, n: undated.length }; shortCount += undated.length; }
     const ev = [
       ...data.incomes.filter((x) => x.date && x.date >= t).map((x) => ({ x, k: 'in', d: x.date })),
       ...data.expenses.filter((x) => x.date).map((x) => ({ x, k: 'out', d: x.date < t ? t : x.date })),
@@ -482,10 +484,12 @@ html.kb .sheet-foot{padding-bottom:10px}
       if (e.k === 'in') { run += e.x.amount; continue; }
       run -= e.x.amount;
       const short = Math.max(0, -run);
-      st[e.x.id] = { short };
-      if (short > 0 && !first) first = { item: e.x, short };
+      // 足りないときは、支払日より後に入る最初の収入（＝間に合わない収入）も覚えておく
+      const late = short > 0 ? ev.find((o) => o.k === 'in' && o.d > e.d) : null;
+      st[e.x.id] = { short, after: run, nextIn: late ? late.x : null };
+      if (short > 0) { shortCount += 1; if (!first) first = { item: e.x, short }; }
     }
-    return { st, first };
+    return { st, first, shortCount };
   }
 
   function monthStats(ym) {
@@ -539,7 +543,9 @@ html.kb .sheet-foot{padding-bottom:10px}
       const it = pj.first.item;
       if (!it) status = `⚠ 日付未定の予定支出に ${yen(pj.first.short)} 足りません`;
       else if (daysUntil(it.date) < 0) status = `⚠ 予定日を過ぎた「${esc(it.label)}」に ${yen(pj.first.short)} 足りません`;
-      else status = `⚠ ${md(it.date)}の「${esc(it.label)}」までに、あと ${yen(pj.first.short)} 必要です`;
+      else status = `⚠ ${md(it.date)}の「${esc(it.label)}」に間に合いません。あと ${yen(pj.first.short)} 必要です`;
+      const others = pj.shortCount - (it ? 1 : pj.first.n);
+      if (others > 0) status += `（ほかにも${others}件、間に合わない予定があります）`;
     } else if (data.expenses.length) {
       status = net >= 0 ? '✓ 今の残高で、予定の支払いはすべて間に合います' : '✓ 予定収入が入れば、予定の支払いはすべて間に合います';
     }
@@ -576,7 +582,7 @@ html.kb .sheet-foot{padding-bottom:10px}
   <section class="hero${net < 0 ? ' neg' : ''}">
     <div class="net-label">予定支出差引後残高</div>
     <div class="net-amount">${yen(net)}</div>
-    <div class="net-sub">総残高 ${yen(B)} − 予定支出 ${yen(E)}${I ? `<br>予定収入も入れると ${yen(net + I)}` : ''}</div>
+    <div class="net-sub">総残高 ${yen(B)} − 予定支出 ${yen(E)}${I ? `<br>予定収入がすべて入ったあとは ${yen(net + I)}` : ''}</div>
     ${status ? `<div class="net-status">${status}</div>` : ''}
   </section>
   ${banners}
@@ -626,17 +632,29 @@ html.kb .sheet-foot{padding-bottom:10px}
 </div>`;
   }
 
+  /* 予定支出ごとに「その日までに間に合うか」を出す。
+     間に合う＝今の残高＋その日までに入る予定収入で、その日までの予定支出を全部払える */
   function statusHTML(s, d) {
     if (!s) return '';
-    if (s.short <= 0) return d !== null && d < 0 ? '<span class="st warn">予定日を過ぎています。払ったら「支払」を押してね</span>' : '<span class="st ok">✓ 準備OK</span>';
-    if (d === null) return `<span class="st warn">今の残高だと、あと${yen(s.short)}</span>`;
-    if (d > 7) {
+    const sub = (t) => `<span class="st-sub">${t}</span>`;
+    if (s.short <= 0) {
+      if (d !== null && d < 0) return '<span class="st warn">予定日を過ぎています。払ったら「支払」を押してね</span>';
+      if (d === null) return '<span class="st ok">✓ 今の残高で払えます</span>';
+      return `<span class="st ok">✓ 間に合う（払ったあと残り ${yen(s.after)}）</span>`;
+    }
+    const need = yen(s.short);
+    if (d === null) return `<span class="st bad">✕ 今の残高だと ${need} 足りません</span>`;
+    let h;
+    if (d < 0) h = `<span class="st bad">✕ 予定日を過ぎています。あと ${need} 必要</span>`;
+    else if (d === 0) h = `<span class="st bad">✕ 今日の支払いに ${need} 足りません</span>`;
+    else if (d <= 7) h = `<span class="st bad">✕ 間に合いません。あと ${need} 必要（残り${d}日）</span>`;
+    else {
       const weeks = Math.ceil(d / 7);
       const pace = Math.ceil(s.short / weeks / 10) * 10;
-      return `<span class="st warn">あと${yen(s.short)}（週${yen(pace)}ずつ）</span>`;
+      h = `<span class="st warn">✕ このままだと間に合いません。あと ${need} 必要</span>${sub(`週${yen(pace)}ずつ貯めれば間に合います`)}`;
     }
-    if (d > 0) return `<span class="st bad">あと${yen(s.short)}（残り${d}日）</span>`;
-    return `<span class="st bad">${yen(s.short)} 足りません</span>`;
+    if (s.nextIn) h += sub(`${md(s.nextIn.date)}の「${esc(s.nextIn.label)}」+${yen(s.nextIn.amount)} は、支払日より後なので間に合いません`);
+    return h;
   }
 
   function entryRow(h) {
@@ -1049,7 +1067,7 @@ ${next ? `<p class="hint">↻ 次の分（${mdw(next)}）を自動で追加し�
 <li><b>間違えたら「元に戻す」</b>記録や削除のあと、画面の下に数秒出ます。あとからでも、履歴の記録をタップすれば直せます。</li>
 <li><b>チャージや引き出しは「移動」</b>口座の「⇄ 移動」か、＋の「移動」から。支出には数えません。</li>
 <li><b>たまに財布を数えて「残高合わせ」</b>口座をタップして実際の金額を入れると、ズレを「使途不明」として記録して合わせます。</li>
-<li><b>目標は「予定支出」に日付つきで</b>「あと○円、週○円ずつ」が出ます。払ったら「支払」、もらったら「受取」で残高に反映されます。</li>
+<li><b>目標は「予定支出」に日付つきで</b>その日までに間に合うかが出ます。今の残高と、その日までに入る予定収入で計算します（支払日より後の収入は数えません）。間に合わないときは「あと○円、週○円ずつ」も出ます。払ったら「支払」、もらったら「受取」で残高に反映されます。</li>
 <li><b>2週間に1回はバックアップ</b>右上の設定から「"ファイル"に保存」→ iCloud Drive へ。</li>
 <li><b>いつもホーム画面のアイコンから開く</b>Safariで開くと保存場所が別になり、データが空っぽに見えます。</li>
 </ol>`,
