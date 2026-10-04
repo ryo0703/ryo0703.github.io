@@ -474,7 +474,8 @@ html.kb .sheet-foot{padding-bottom:10px}
     run -= sum(undated);
     const undShort = Math.max(0, -run);
     undated.forEach((x) => { st[x.id] = { short: undShort, after: run, nextIn: null }; });
-    if (undShort > 0) { first = { item: null, short: undShort }; shortCount += undated.length; }
+    // 日付未定の予定支出が本当にあるときだけ「日付未定に足りない」とする（残高がマイナスなだけなら、日付つきの支出側で出す）
+    if (undated.length && undShort > 0) { first = { item: null, short: undShort, n: undated.length }; shortCount += undated.length; }
     const ev = [
       ...data.incomes.filter((x) => x.date && x.date >= t).map((x) => ({ x, k: 'in', d: x.date })),
       ...data.expenses.filter((x) => x.date).map((x) => ({ x, k: 'out', d: x.date < t ? t : x.date })),
@@ -543,7 +544,8 @@ html.kb .sheet-foot{padding-bottom:10px}
       if (!it) status = `⚠ 日付未定の予定支出に ${yen(pj.first.short)} 足りません`;
       else if (daysUntil(it.date) < 0) status = `⚠ 予定日を過ぎた「${esc(it.label)}」に ${yen(pj.first.short)} 足りません`;
       else status = `⚠ ${md(it.date)}の「${esc(it.label)}」に間に合いません。あと ${yen(pj.first.short)} 必要です`;
-      if (pj.shortCount > 1) status += `（ほかに${pj.shortCount - 1}件も間に合いません）`;
+      const others = pj.shortCount - (it ? 1 : pj.first.n);
+      if (others > 0) status += `（ほかにも${others}件、間に合わない予定があります）`;
     } else if (data.expenses.length) {
       status = net >= 0 ? '✓ 今の残高で、予定の支払いはすべて間に合います' : '✓ 予定収入が入れば、予定の支払いはすべて間に合います';
     }
