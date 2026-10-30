@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>期末試験 勉強計画</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="期末計画">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F3F4F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1014" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 時間割表のように日付カードを縦に積む。科目は色の点＋名前で示し、今日の日付には蛍光マーカーを引く */
+:root{
+  --paper:#F3F4F6; --card:#FFFFFF; --ink:#141922; --ink-2:#4F5764; --muted:#80879A; --rule:#E1E4EA;
+  --accent:#2340B5; --marker:#FFE04A; --inverse:#141922; --inverse-ink:#FFFFFF;
+  --c-mathc:#2a78d6; --c-koku:#eb6834; --c-eng:#1baf7a; --c-mathb:#eda100;
+  --c-nichi:#e87ba4; --c-chi:#008300; --c-hou:#6250d6; --c-yobi:#A3A8B1;
+  --f-display:"Dela Gothic One","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  --f-body:"BIZ UDPGothic","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1014; --card:#181B21; --ink:#ECEEF2; --ink-2:#B0B6C1; --muted:#80879A; --rule:#2A2E36;
+    --accent:#93A6FF; --marker:#6B5A10; --inverse:#ECEEF2; --inverse-ink:#0E1014;
+    --c-mathc:#3987e5; --c-koku:#d95926; --c-eng:#199e70; --c-mathb:#c98500;
+    --c-nichi:#d55181; --c-chi:#008300; --c-hou:#9085e9; --c-yobi:#6B717C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1014; --card:#181B21; --ink:#ECEEF2; --ink-2:#B0B6C1; --muted:#80879A; --rule:#2A2E36;
+  --accent:#93A6FF; --marker:#6B5A10; --inverse:#ECEEF2; --inverse-ink:#0E1014;
+  --c-mathc:#3987e5; --c-koku:#d95926; --c-eng:#199e70; --c-mathb:#c98500;
+  --c-nichi:#d55181; --c-chi:#008300; --c-hou:#9085e9; --c-yobi:#6B717C;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+h1,h2,h3{margin:0;text-wrap:balance}
+p,ul,dl{margin:0}
+ul{padding:0;list-style:none}
+a{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.gut{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* ヘッダー */
+.hero{padding-block:24px 18px;display:grid;gap:10px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--ink-2)}
+.hero h1{font-family:var(--f-display);font-weight:400;font-size:clamp(34px,9vw,48px);line-height:1.1;letter-spacing:.02em}
+.lede{color:var(--ink-2);max-width:40em}
+.count{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:4px}
+.count .c-label{font-size:13px;font-weight:700;color:var(--ink-2)}
+.count .c-num{font-family:var(--f-display);font-size:34px;line-height:1}
+.count .c-unit{font-size:14px;font-weight:700}
+.count .c-sub{flex-basis:100%;font-size:14px;font-weight:700}
+
+/* ページ内ナビ */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--rule)}
+.nav-in{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.nav a{flex:none;text-decoration:none;color:var(--ink);font-weight:700;font-size:13px;padding:6px 13px;border-radius:999px;border:1px solid var(--rule);background:var(--card)}
+.nav a:hover{border-color:var(--ink-2)}
+
+main{padding-block:8px 56px;display:grid;gap:40px}
+section{display:grid;gap:14px;scroll-margin-top:64px}
+section > h2{font-family:var(--f-display);font-weight:400;font-size:22px;letter-spacing:.02em}
+.sec-note{color:var(--ink-2);font-size:14px}
+
+/* 試験日程 */
+.exam-list{display:grid;gap:0;background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.exam-row{display:grid;grid-template-columns:4.6em 1fr;gap:12px;padding:12px 14px;border-top:1px solid var(--rule)}
+.exam-row:first-child{border-top:0}
+.exam-date{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.exam-date .md{font-family:var(--f-display);font-size:20px;line-height:1.1}
+.exam-date .dow{font-size:12px;color:var(--ink-2);font-weight:700}
+.exam-slots{display:grid;gap:6px;min-width:0}
+.exam-slots li{display:grid;grid-template-columns:1.4em 1fr;gap:10px;align-items:baseline}
+.slot-main{display:grid;min-width:0}
+.period{font-weight:700}
+.time{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.xsub{font-weight:700;min-width:0;display:inline-flex;align-items:center;gap:6px}
+
+/* 段階 */
+.phase{display:grid;gap:4px;padding-top:6px}
+.phase-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.phase-name{font-weight:700;font-size:17px}
+.phase-range{font-family:var(--f-mono);font-size:13px;color:var(--ink-2)}
+.phase-hours{margin-left:auto;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--ink-2)}
+.phase-note{font-size:13.5px;color:var(--ink-2)}
+.days{display:grid;gap:10px;margin-bottom:18px}
+
+/* 日カード */
+.day{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;display:grid;gap:10px;scroll-margin-top:64px}
+.day.is-light{background:transparent;border-style:dashed}
+.day-head{display:flex;align-items:center;gap:10px}
+.date{display:flex;align-items:baseline;gap:6px;font-weight:400}
+.date .md{font-family:var(--f-display);font-size:24px;line-height:1.15;padding:0 2px}
+.date .dow{font-size:12px;font-weight:700;color:var(--ink-2);border:1px solid var(--rule);border-radius:4px;padding:0 5px;line-height:1.6}
+.today-tag{display:none;font-size:11px;font-weight:700;background:var(--marker);color:var(--ink);padding:1px 8px;border-radius:4px}
+.day-hours{margin-left:auto;font-family:var(--f-mono);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.is-light .day-hours{font-family:var(--f-body);font-size:12px;font-weight:700}
+.is-today .md{background:linear-gradient(transparent 52%,var(--marker) 52%)}
+.is-today .today-tag{display:inline-block}
+.day.is-today{border-color:var(--ink-2)}
+.day.is-light.is-today{border-style:solid}
+
+.exam-band{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;background:var(--inverse);color:var(--inverse-ink);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:700}
+.exam-band .xl{font-size:11px;letter-spacing:.08em;opacity:.75}
+.exam-band .xs b{margin-right:3px}
+
+.events{display:flex;flex-wrap:wrap;gap:6px}
+.events li{font-size:12px;color:var(--ink-2);border:1px solid var(--rule);border-radius:6px;padding:1px 8px;font-variant-numeric:tabular-nums}
+
+.tasks{display:grid}
+.tasks li{display:grid;grid-template-columns:5.4em 1fr auto;gap:10px;align-items:baseline;padding-block:7px;border-top:1px solid var(--rule)}
+.tasks li:first-child{border-top:0;padding-top:0}
+.sub{font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none;display:inline-block;align-self:center}
+.what{min-width:0;font-size:14.5px}
+.h{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink-2)}
+.empty{font-size:13.5px;color:var(--ink-2)}
+.sukima{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13px;color:var(--ink-2);border-top:1px dashed var(--rule);padding-top:8px}
+.is-light .sukima{border-top:0;padding-top:0}
+.sk-label{font-size:11px;font-weight:700;color:var(--ink);background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:4px;padding:1px 7px}
+
+#today .day{border-width:2px}
+
+/* 配分 */
+.alloc{display:grid;gap:8px;background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px}
+.alloc-row{display:grid;grid-template-columns:5.6em 1fr 3.4em;gap:10px;align-items:center}
+.alloc-label{font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.alloc-track{height:12px;border-left:1px solid var(--muted);display:flex;align-items:center}
+.alloc-bar{display:block;height:10px;background:var(--c);border-radius:0 4px 4px 0}
+.alloc-val{text-align:right;font-family:var(--f-mono);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.alloc-note{font-size:13px;color:var(--ink-2)}
+
+/* 科目カード */
+.subjs{display:grid;gap:12px}
+.subj{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px;display:grid;gap:10px}
+.subj-head{display:grid;gap:6px}
+.subj h3{font-size:17px;display:flex;align-items:center;gap:8px}
+.subj h3 .dot{width:11px;height:11px}
+.subj-meta{display:flex;flex-wrap:wrap;gap:6px}
+.subj-meta span{font-size:12px;font-weight:700;color:var(--ink-2);border:1px solid var(--rule);border-radius:6px;padding:1px 8px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.kv dt{font-size:12px;font-weight:700;color:var(--ink-2);padding-top:2px;white-space:nowrap}
+.kv dd{margin:0;min-width:0}
+@media (max-width:420px){
+  .kv{grid-template-columns:1fr;gap:2px}
+  .kv dd{margin-bottom:6px}
+}
+.how{display:grid;gap:6px;font-size:14px}
+.how li{position:relative;padding-left:14px}
+.how li::before{content:"";position:absolute;left:2px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+
+/* ルール */
+.rules{display:grid;gap:12px}
+.rule{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px;display:grid;gap:8px}
+.rule h3{font-size:15px}
+.rule p,.rule li{font-size:14px}
+.rule ul{display:grid;gap:6px}
+.rule ul li{position:relative;padding-left:14px}
+.rule ul li::before{content:"";position:absolute;left:2px;top:.72em;width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.tt{display:grid;gap:0}
+.tt-row{display:grid;grid-template-columns:7.2em 1fr;gap:10px;padding-block:7px;border-top:1px solid var(--rule)}
+.tt-row:first-child{border-top:0;padding-top:0}
+.tt-row .k{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;padding-top:1px}
+.kanji-steps{display:grid;gap:0;counter-reset:none}
+.foot{font-size:12px;color:var(--muted)}
+
+@media (prefers-reduced-motion: no-preference){html{scroll-behavior:smooth}}
+
+/* ===== アプリ版の追加 ===== */
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+
+.prog{display:grid;gap:6px;margin-top:4px;max-width:28em}
+.prog-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.prog-label{font-size:13px;font-weight:700;color:var(--ink-2)}
+.prog-val{font-family:var(--f-mono);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.prog-val b{font-size:18px}
+.prog-track{height:8px;border-radius:4px;background:var(--rule);overflow:hidden}
+.prog-bar{display:block;height:100%;width:0;background:var(--ink);border-radius:0 4px 4px 0;transition:width .3s}
+
+.tasks li{display:block}
+.task{display:grid;grid-template-columns:22px 5.2em 1fr auto;gap:10px;align-items:baseline;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.task input,.sukima input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.box{width:20px;height:20px;border:2px solid var(--muted);border-radius:6px;align-self:center;display:grid;place-items:center;background:var(--card)}
+input:checked + .box{background:var(--ink);border-color:var(--ink)}
+input:checked + .box::after{content:"";width:9px;height:5px;border-left:2px solid var(--paper);border-bottom:2px solid var(--paper);transform:translateY(-1px) rotate(-45deg)}
+input:focus-visible + .box{outline:2px solid var(--accent);outline-offset:2px}
+.task input:checked ~ .what{text-decoration:line-through;color:var(--muted)}
+.task input:checked ~ .sub,.task input:checked ~ .h{opacity:.5}
+.sukima{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sukima input:checked ~ .sk-text{text-decoration:line-through;color:var(--muted)}
+.sukima .box{width:18px;height:18px}
+
+.day-prog{margin-left:auto;font-family:var(--f-mono);font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.day-prog + .day-hours{margin-left:0}
+.day.is-done .day-prog{color:var(--ink)}
+.day.is-done .day-prog::before{content:"完了 "}
+
+.alloc-bar{position:relative;background:color-mix(in srgb,var(--c) 28%,transparent);overflow:hidden}
+.alloc-done{position:absolute;inset:0 auto 0 0;width:0;background:var(--c);border-radius:0 4px 4px 0;transition:width .3s}
+.alloc-row{grid-template-columns:5.6em 1fr 4.6em}
+@media (prefers-reduced-motion: reduce){.prog-bar,.alloc-done{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="gut hero">
+  <p class="eyebrow">2026年度 2学期期末試験</p>
+  <h1>勉強計画</h1>
+  <p class="lede">10/30（金）〜11/17（火）。放課後と休日で合計82時間、それとは別に毎日スキマ時間30分。</p>
+  <div class="prog" id="prog"><div class="prog-top"><span class="prog-label">進み具合</span><span class="prog-val"><b id="prog-done">0</b>h ／ 82h</span></div><div class="prog-track"><span class="prog-bar" id="prog-bar"></span></div></div>
+  <p class="count" id="countdown"><span class="c-label">最初の試験</span><span class="c-sub">11/12（木）英コミュIII・数学C(b)</span></p>
+</header>
+
+<nav class="nav" aria-label="ページ内の移動">
+  <div class="gut nav-in">
+    <a href="#today" id="nav-today" hidden>今日</a>
+    <a href="#exams">試験日程</a>
+    <a href="#schedule">日割り</a>
+    <a href="#subjects">科目別</a>
+    <a href="#rules">ルール</a>
+  </div>
+</nav>
+
+<main class="gut">
+  <section id="today" hidden aria-label="今日やること">
+    <h2>今日やること</h2>
+    <div class="today-slot"></div>
+  </section>
+
+  <section id="exams">
+    <h2>試験日程</h2>
+    <div class="exam-list"><div class="exam-row"><div class="exam-date"><span class="md">11/12</span><span class="dow">木</span></div><ul class="exam-slots"><li><span class="period">③</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語コミュニケーションIII</span><span class="time">11:20–12:10</span></span></li><li><span class="period">④</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数学C(b)</span><span class="time">12:40–13:30</span></span></li></ul></div><div class="exam-row"><div class="exam-date"><span class="md">11/13</span><span class="dow">金</span></div><ul class="exam-slots"><li><span class="period">②</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学基礎</span><span class="time">10:10–11:00</span></span></li><li><span class="period">④</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律入門</span><span class="time">12:40–13:30</span></span></li></ul></div><div class="exam-row"><div class="exam-date"><span class="md">11/16</span><span class="dow">月</span></div><ul class="exam-slots"><li><span class="period">③</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数学B</span><span class="time">11:20–12:10</span></span></li><li><span class="period">④</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日本語・日本文化I</span><span class="time">12:40–13:30</span></span></li></ul></div><div class="exam-row"><div class="exam-date"><span class="md">11/17</span><span class="dow">火</span></div><ul class="exam-slots"><li><span class="period">③</span><span class="slot-main"><span class="xsub"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論理国語</span><span class="time">11:20–12:10</span></span></li></ul></div></div>
+  </section>
+
+  <section id="schedule">
+    <h2>日割り</h2>
+    <p class="sec-note">時間は放課後・休日に机に向かう分。スキマ30分は別枠で、各日の下に書いてあります。</p>
+    <div class="phase"><div class="phase-top"><p class="phase-name">準備期</p><p class="phase-range">10/30〜11/4</p><p class="phase-hours">12h</p></div><p class="phase-note">部活・バイト・応援の合間。まとまった時間は11/1と11/4だけ。</p></div><div class="days"><article class="day is-light" id="d1030" data-date="2026-10-30"><header class="day-head"><h3 class="date"><span class="md">10/30</span><span class="dow">金</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">スキマのみ</span></header><ul class="events"><li>合奏</li><li>バイト</li></ul><p class="empty">まとまった時間はなし。スキマ時間だけ進める。</p><label class="sukima"><input type="checkbox" data-tid="1030-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第34回</span></label></article><article class="day is-light" id="d1031" data-date="2026-10-31"><header class="day-head"><h3 class="date"><span class="md">10/31</span><span class="dow">土</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">スキマのみ</span></header><ul class="events"><li>一日練</li><li>バイト</li></ul><p class="empty">まとまった時間はなし。スキマ時間だけ進める。</p><label class="sukima"><input type="checkbox" data-tid="1031-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第35回</span></label></article><article class="day" id="d1101" data-date="2026-11-01"><header class="day-head"><h3 class="date"><span class="md">11/1</span><span class="dow">日</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">8h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1101-0" data-h="3" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">前提（1学期の複素数平面・極形式）</span><span class="h">3h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1101-1" data-h="2" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">ド・モアブルの定理</span><span class="h">2h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1101-2" data-h="3" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">Lesson 4：和訳と照らして読み直し、段落ごとの要点を1行に</span><span class="h">3h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1101-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第36回</span></label></article><article class="day is-light" id="d1102" data-date="2026-11-02"><header class="day-head"><h3 class="date"><span class="md">11/2</span><span class="dow">月</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">スキマのみ</span></header><ul class="events"><li>応援練習</li><li>バイト</li></ul><p class="empty">まとまった時間はなし。スキマ時間だけ進める。</p><label class="sukima"><input type="checkbox" data-tid="1102-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第37回</span></label></article><article class="day is-light" id="d1103" data-date="2026-11-03"><header class="day-head"><h3 class="date"><span class="md">11/3</span><span class="dow">火</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">スキマのみ</span></header><ul class="events"><li>文化の日・サッカー応援（終日）</li></ul><p class="empty">まとまった時間はなし。スキマ時間だけ進める。</p><label class="sukima"><input type="checkbox" data-tid="1103-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第38回</span></label></article><article class="day" id="d1104" data-date="2026-11-04"><header class="day-head"><h3 class="date"><span class="md">11/4</span><span class="dow">水</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">4h</span></header><ul class="events"><li>合奏は欠席</li></ul><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1104-0" data-h="2.5" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">複素数平面上の図形</span><span class="h">2.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1104-1" data-h="1.5" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">Lesson 6（前半）</span><span class="h">1.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1104-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第39回</span></label></article></div><div class="phase"><div class="phase-top"><p class="phase-name">集中期</p><p class="phase-range">11/5〜11/11</p><p class="phase-hours">36h</p></div><p class="phase-note">部活もバイトもなし。11/12・11/13に試験がある4科目を仕上げる。</p></div><div class="days"><article class="day" id="d1105" data-date="2026-11-05"><header class="day-head"><h3 class="date"><span class="md">11/5</span><span class="dow">木</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">4h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1105-0" data-h="1.5" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">図形の続き（w＝1/z のえがく図形を含む）</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1105-1" data-h="2.5" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">複素数と角</span><span class="h">2.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1105-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第40回</span></label></article><article class="day" id="d1106" data-date="2026-11-06"><header class="day-head"><h3 class="date"><span class="md">11/6</span><span class="dow">金</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">4h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1106-0" data-h="1.5" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">複素数と角の続き・三角形の形状</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1106-1" data-h="1" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">Lesson 6（残り）</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1106-2" data-h="1.5" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">Expand Your Perspective 3</span><span class="h">1.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1106-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第41回</span></label></article><article class="day" id="d1107" data-date="2026-11-07"><header class="day-head"><h3 class="date"><span class="md">11/7</span><span class="dow">土</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">8h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1107-0" data-h="3" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">行列：加法・減法・実数倍、乗法</span><span class="h">3h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1107-1" data-h="1.5" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">授業プリント（Dunbar&#x27;s Number含む）を解答で答え合わせしながら解き直し</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1107-2" data-h="2" data-sub="mathb"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数B</span><span class="what">1学期のベクトルの基礎を復習（応用の土台）</span><span class="h">2h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1107-3" data-h="1.5" data-sub="nichi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日語日文</span><span class="what">範囲の整理：ノートとプリントに印をつけ、予想問題を作る</span><span class="h">1.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1107-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第42回</span></label></article><article class="day" id="d1108" data-date="2026-11-08"><header class="day-head"><h3 class="date"><span class="md">11/8</span><span class="dow">日</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">8h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1108-0" data-h="2" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">行列：乗法の性質・逆行列</span><span class="h">2h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1108-1" data-h="2.5" data-sub="chi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学</span><span class="what">地層：プリント①②、スライド③④、宿題①②の解き直し</span><span class="h">2.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1108-2" data-h="2.5" data-sub="hou"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律</span><span class="what">法の基礎：初回、法の支配、法の種類、法律学の基礎①〜④</span><span class="h">2.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1108-3" data-h="1" data-sub="yobi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-yobi)" aria-hidden="true"></i>予備</span><span class="what">遅れの回収</span><span class="h">1h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1108-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第43回</span></label></article><article class="day" id="d1109" data-date="2026-11-09"><header class="day-head"><h3 class="date"><span class="md">11/9</span><span class="dow">月</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">4h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1109-0" data-h="1.5" data-sub="chi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学</span><span class="what">生物の変遷：スライド⑤⑥⑦と大絶滅ビッグファイブを1枚の年表に</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1109-1" data-h="1.5" data-sub="hou"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律</span><span class="what">人権総論・平等：外国人の人権、法の下の平等、差別訴訟</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1109-2" data-h="1" data-sub="yobi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-yobi)" aria-hidden="true"></i>予備</span><span class="what">遅れの回収</span><span class="h">1h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1109-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第44回</span></label></article><article class="day" id="d1110" data-date="2026-11-10"><header class="day-head"><h3 class="date"><span class="md">11/10</span><span class="dow">火</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">4h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1110-0" data-h="1" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">演習：問題集の解き直し</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1110-1" data-h="1" data-sub="chi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学</span><span class="what">気象：スライド⑧⑨、10/28-29のスライド、実習書</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1110-2" data-h="1" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">速単：全範囲をまとめて確認</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1110-3" data-h="1" data-sub="yobi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-yobi)" aria-hidden="true"></i>予備</span><span class="what">遅れの回収</span><span class="h">1h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1110-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第45回</span></label></article><article class="day" id="d1111" data-date="2026-11-11"><header class="day-head"><h3 class="date"><span class="md">11/11</span><span class="dow">水</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">4h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1111-0" data-h="1" data-sub="mathc"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="what">演習：問題集の解き直し</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1111-1" data-h="1.5" data-sub="eng"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="what">総チェック：各レッスンの要点と速単</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1111-2" data-h="1.5" data-sub="yobi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-yobi)" aria-hidden="true"></i>予備</span><span class="what">遅れの回収（余れば数Cの演習）</span><span class="h">1.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1111-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">速単20分＋漢字 第46回</span></label></article></div><div class="phase"><div class="phase-top"><p class="phase-name">試験期間</p><p class="phase-range">11/12〜11/17</p><p class="phase-hours">34h</p></div><p class="phase-note">試験が終わった午後に6h（土日は8h）。前日は翌日の試験科目だけに絞る。</p></div><div class="days"><article class="day is-exam" id="d1112" data-date="2026-11-12"><header class="day-head"><h3 class="date"><span class="md">11/12</span><span class="dow">木</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">6h</span></header><div class="exam-band"><span class="xl">試験</span><span class="xs"><b>③</b>英コミュIII</span><span class="xs"><b>④</b>数学C(b)</span></div><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1112-0" data-h="1.5" data-sub="chi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学</span><span class="what">気象の続き</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1112-1" data-h="1.5" data-sub="chi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学</span><span class="what">年表と宿題の総復習</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1112-2" data-h="1.5" data-sub="hou"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律</span><span class="what">精神的自由：思想・良心、表現・学問、10/28以降の回</span><span class="h">1.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1112-3" data-h="1.5" data-sub="hou"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律</span><span class="what">総復習：用語を何も見ずに説明できるか</span><span class="h">1.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1112-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">漢字30分 第47〜49回</span></label></article><article class="day is-exam" id="d1113" data-date="2026-11-13"><header class="day-head"><h3 class="date"><span class="md">11/13</span><span class="dow">金</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">6h</span></header><div class="exam-band"><span class="xl">試験</span><span class="xs"><b>②</b>地学基礎</span><span class="xs"><b>④</b>法律入門</span></div><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1113-0" data-h="3" data-sub="mathb"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数B</span><span class="what">ベクトルの応用</span><span class="h">3h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1113-1" data-h="3" data-sub="koku"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論国</span><span class="what">こころ：場面ごとに「誰が何をして、どう感じたか」</span><span class="h">3h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1113-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">漢字30分 第50〜52回</span></label></article><article class="day" id="d1114" data-date="2026-11-14"><header class="day-head"><h3 class="date"><span class="md">11/14</span><span class="dow">土</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">8h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1114-0" data-h="1" data-sub="mathb"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数B</span><span class="what">ベクトルの応用</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1114-1" data-h="1" data-sub="mathb"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数B</span><span class="what">確率統計</span><span class="h">1h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1114-2" data-h="2.5" data-sub="nichi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日語日文</span><span class="what">要点まとめ：テーマごとにキーワードの意味・具体例・理由</span><span class="h">2.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1114-3" data-h="2" data-sub="koku"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論国</span><span class="what">評論文：段落ごとの要旨と、何と何を対比しているか</span><span class="h">2h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1114-4" data-h="1.5" data-sub="koku"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論国</span><span class="what">漢字 第56〜64回</span><span class="h">1.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1114-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">漢字30分 第53〜55回</span></label></article><article class="day" id="d1115" data-date="2026-11-15"><header class="day-head"><h3 class="date"><span class="md">11/15</span><span class="dow">日</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">8h</span></header><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1115-0" data-h="3" data-sub="mathb"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数B</span><span class="what">確率統計</span><span class="h">3h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1115-1" data-h="0.5" data-sub="nichi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日語日文</span><span class="what">要点まとめの残り</span><span class="h">0.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1115-2" data-h="2.5" data-sub="nichi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日語日文</span><span class="what">記述の練習：予想問題に何も見ずに答えて、ノートで答え合わせ</span><span class="h">2.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1115-3" data-h="2" data-sub="nichi"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日語日文</span><span class="what">書けなかった問題の書き直し・全体の確認</span><span class="h">2h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1115-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">漢字 第65〜66回（これで1周目が終わる）</span></label></article><article class="day is-exam" id="d1116" data-date="2026-11-16"><header class="day-head"><h3 class="date"><span class="md">11/16</span><span class="dow">月</span></h3><span class="today-tag">今日</span><span class="day-prog"></span><span class="day-hours">6h</span></header><div class="exam-band"><span class="xl">試験</span><span class="xs"><b>③</b>数学B</span><span class="xs"><b>④</b>日本語・日本文化I</span></div><ul class="tasks"><li><label class="task"><input type="checkbox" data-tid="1116-0" data-h="3.5" data-sub="koku"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論国</span><span class="what">こころ・評論文の総復習</span><span class="h">3.5h</span></label></li><li><label class="task"><input type="checkbox" data-tid="1116-1" data-h="2.5" data-sub="koku"><span class="box" aria-hidden="true"></span><span class="sub"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論国</span><span class="what">漢字の2周目（×をつけた語だけ）</span><span class="h">2.5h</span></label></li></ul><label class="sukima"><input type="checkbox" data-tid="1116-sk" data-h="0" data-sub="sk"><span class="box" aria-hidden="true"></span><span class="sk-label">スキマ30分</span><span class="sk-text">漢字30分 ×をつけた語</span></label></article><article class="day is-light is-exam" id="d1117" data-date="2026-11-17"><header class="day-head"><h3 class="date"><span class="md">11/17</span><span class="dow">火</span></h3><span class="today-tag">今日</span><span class="day-hours">—</span></header><div class="exam-band"><span class="xl">試験</span><span class="xs"><b>③</b>論理国語</span></div><ul class="events"><li>通常練</li></ul><p class="empty">最後の試験。終わったら部活が再開。</p></article></div>
+  </section>
+
+  <section id="subjects">
+    <h2>科目別</h2>
+    <div class="alloc" role="list" aria-label="科目ごとの時間配分"><div class="alloc-row" data-sub="mathc" data-h="20" title="数学C(b)：20h"><span class="alloc-label"><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数C</span><span class="alloc-track"><span class="alloc-bar" style="width:100.00%;--c:var(--c-mathc)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/20h</span></div><div class="alloc-row" data-sub="koku" data-h="12.5" title="論理国語：12.5h"><span class="alloc-label"><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論国</span><span class="alloc-track"><span class="alloc-bar" style="width:62.50%;--c:var(--c-koku)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/12.5h</span></div><div class="alloc-row" data-sub="eng" data-h="11" title="英語コミュニケーションIII：11h"><span class="alloc-label"><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語</span><span class="alloc-track"><span class="alloc-bar" style="width:55.00%;--c:var(--c-eng)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/11h</span></div><div class="alloc-row" data-sub="mathb" data-h="10" title="数学B：10h"><span class="alloc-label"><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数B</span><span class="alloc-track"><span class="alloc-bar" style="width:50.00%;--c:var(--c-mathb)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/10h</span></div><div class="alloc-row" data-sub="nichi" data-h="9" title="日本語・日本文化I：9h"><span class="alloc-label"><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日語日文</span><span class="alloc-track"><span class="alloc-bar" style="width:45.00%;--c:var(--c-nichi)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/9h</span></div><div class="alloc-row" data-sub="chi" data-h="8" title="地学基礎：8h"><span class="alloc-label"><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学</span><span class="alloc-track"><span class="alloc-bar" style="width:40.00%;--c:var(--c-chi)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/8h</span></div><div class="alloc-row" data-sub="hou" data-h="7" title="法律入門：7h"><span class="alloc-label"><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律</span><span class="alloc-track"><span class="alloc-bar" style="width:35.00%;--c:var(--c-hou)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/7h</span></div><div class="alloc-row" data-sub="yobi" data-h="4.5" title="予備：4.5h"><span class="alloc-label"><i class="dot" style="--c:var(--c-yobi)" aria-hidden="true"></i>予備</span><span class="alloc-track"><span class="alloc-bar" style="width:22.50%;--c:var(--c-yobi)"><span class="alloc-done"></span></span></span><span class="alloc-val">0/4.5h</span></div></div>
+    <p class="alloc-note">このほかに、英語は速単、論国は漢字をスキマ時間で毎日進めます。</p>
+    <div class="subjs"><article class="subj" id="s-eng"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-eng)" aria-hidden="true"></i>英語コミュニケーションIII</h3><p class="subj-meta"><span>試験 11/12（木）③</span><span>11h＋速単（スキマ）</span></p></header><dl class="kv"><dt>範囲</dt><dd>Element EC III Lesson 4・Lesson 6・Expand Your Perspective 3／授業プリント（Dunbar&#x27;s Number含む。共有フォルダに解答あり）／速読英単語 Stage 4全部・Stage 5 No.40〜44</dd><dt>出題</dt><dd>読解と語彙。選択、穴埋め、並べ替え、記述、正誤など</dd></dl><ul class="how"><li>本文は和訳と照らして読み直し、段落ごとの要点を1行で言えるようにする。正誤・並べ替え・記述に効く</li><li>プリントは共有フォルダの解答で答え合わせしながら解き直す</li><li>速単はスキマ時間に毎日20分。1周目で知らない単語に印をつけ、2周目からは印の単語だけ。小テストの答案があれば間違えた単語から</li></ul></article><article class="subj" id="s-mathc"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-mathc)" aria-hidden="true"></i>数学C(b)</h3><p class="subj-meta"><span>試験 11/12（木）④</span><span>20h</span></p></header><dl class="kv"><dt>範囲</dt><dd>ド・モアブルの定理（p.128〜132）／図形への応用（複素数平面上の図形、複素数と角、三角形の形状、w＝1/z のえがく図形）／★行列（加法・減法・実数倍、乗法、乗法の性質、逆行列）</dd><dt>範囲外</dt><dd>連立1次方程式と行列、掃き出し法（3学期）</dd></dl><ul class="how"><li>複素数は「極形式→ド・モアブル→図形→角」の順に積み上がる。前提を飛ばさず順番どおりに進める</li><li>行列は1学期と関係のない新しい単元で、計算問題が中心になりやすい。得点源にしやすい（推測）</li><li>複素数が遅れても行列の5hは削らない。遅れは予備で吸収する</li><li>演習は問題集（Hi-PRIME）の解き直し</li></ul></article><article class="subj" id="s-chi"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-chi)" aria-hidden="true"></i>地学基礎</h3><p class="subj-meta"><span>試験 11/13（金）②</span><span>8h</span></p></header><dl class="kv"><dt>範囲（暫定）</dt><dd>地球史（地学基礎 p.158〜209）と気象（p.72〜127のうち、試験前の授業で扱ったところまでの見込み）</dd><dt>教材</dt><dd>授業プリント①②、スライド③〜⑦、大絶滅ビッグファイブ、宿題①②（模範解答あり）、スライド⑧⑨、10/28-29のスライド、実習書</dd></dl><ul class="how"><li>教科書は2冊あって範囲が広いので、プリント・スライド・宿題を軸にする</li><li>宿題は答えを隠して解き直す</li><li>生物の変遷は時代ごとの生物と出来事を1枚の年表にまとめる。11/12の見直しが速くなる</li><li>11/4の実験の内容が範囲に入る可能性もある</li></ul></article><article class="subj" id="s-hou"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-hou)" aria-hidden="true"></i>法律入門</h3><p class="subj-meta"><span>試験 11/13（金）④</span><span>7h</span></p></header><dl class="kv"><dt>範囲（暫定）</dt><dd>試験前の最後の授業（11/10ごろ）までの全回</dd><dt>出題</dt><dd>持ち込み不可。選択や記述など幅広い</dd><dt>まとまり</dt><dd>法の基礎（初回〜法律学の基礎④）／人権総論・平等（外国人の人権、法の下の平等、差別訴訟）／精神的自由（思想・良心、表現・学問、10/28以降の回）</dd></dl><ul class="how"><li>Geminiのノートブックで授業回ごとに用語リストと記述問題を作り、何も見ずに答えてから答え合わせ</li><li>判例は「事件の中身→争点→結論→理由」の4点で整理</li><li>AIのまとめには間違いが混じることがある。最後は自分のノートで確認</li><li>11/6と11/10の授業で、範囲と判例が出るかを先生に確認する</li></ul></article><article class="subj" id="s-mathb"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-mathb)" aria-hidden="true"></i>数学B</h3><p class="subj-meta"><span>試験 11/16（月）③</span><span>10h</span></p></header><dl class="kv"><dt>範囲（暫定）</dt><dd>ベクトルの応用、確率統計</dd></dl><ul class="how"><li>11/7に1学期のベクトルの基礎を復習してから応用に入る</li><li>教科書の例題と問題集の基本問題を確実に。応用問題は後回し</li><li>正式な範囲が出たら配分を調整する</li></ul></article><article class="subj" id="s-nichi"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-nichi)" aria-hidden="true"></i>日本語・日本文化I</h3><p class="subj-meta"><span>試験 11/16（月）④</span><span>9h</span></p></header><dl class="kv"><dt>範囲</dt><dd>授業内容（ノートとプリント）</dd><dt>出題</dt><dd>1学期は記述が多め</dd></dl><ul class="how"><li>範囲の整理→要点まとめ→記述の練習→書き直しの4段階で進める</li><li>1学期の答案があれば最初に見て、どこで減点されたかを確認する</li><li>記述は「結論→理由→具体例」の順で書き、授業で使われた言葉をそのまま入れる</li><li>Geminiで予想問題を作るのもあり。答えは必ず自分のノートで確認</li></ul></article><article class="subj" id="s-koku"><header class="subj-head"><h3><i class="dot" style="--c:var(--c-koku)" aria-hidden="true"></i>論理国語</h3><p class="subj-meta"><span>試験 11/17（火）③</span><span>12.5h＋漢字（スキマ）</span></p></header><dl class="kv"><dt>範囲</dt><dd>こころ、授業中の評論文、漢字マイスター 第34〜66回（すべて書き取り）</dd></dl><ul class="how"><li>こころは場面ごとに「誰が何をして、どう感じたか」を整理。板書や先生が強調したところを優先</li><li>評論文は段落ごとの要旨と、筆者が何と何を対比しているかをまとめる</li><li>漢字は1回30語前後・10分の想定。量が少なければ前倒しで進める</li></ul></article></div>
+  </section>
+
+  <section id="rules">
+    <h2>ルール</h2>
+    <div class="rules">
+      <div class="rule">
+        <h3>勉強のサイクル</h3>
+        <div class="tt">
+          <div class="tt-row"><span class="k">1セット</span><span>50分勉強＋10分休憩</span></div>
+          <div class="tt-row"><span class="k">2セットごと</span><span>20〜30分の長めの休憩</span></div>
+          <div class="tt-row"><span class="k">平日 4h</span><span>5セット（休憩込みで約5時間）</span></div>
+          <div class="tt-row"><span class="k">土日 8h</span><span>10セット（朝9時台に始める）</span></div>
+        </div>
+        <ul>
+          <li>タスクの時間は目安。2.5hなら3セットくらいの感覚でいい</li>
+          <li>1セット1タスク。科目の切り替えはセットの境目で</li>
+          <li>一番重い科目（数Cなど）は最初のセットに置く</li>
+          <li>数学→暗記→数学のように、種類を交互にする</li>
+          <li>セットの最初の2〜3分で、前回の内容を何も見ずに思い出す</li>
+          <li>休憩中はSNSを避けて、立つ・水を飲む・目を閉じる</li>
+          <li>暗記の日や疲れた日は25分＋5分に切り替えてもいい</li>
+          <li>睡眠は削らない。覚えた内容は寝ている間に定着するので、試験の前日ほど大事</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <h3>スキマ時間（毎日30分）</h3>
+        <p>通学や休み時間など、放課後の時間とは別に使う30分です。</p>
+        <div class="tt">
+          <div class="tt-row"><span class="k">10/30〜11/11</span><span>速単20分＋漢字10分（1日1回分）</span></div>
+          <div class="tt-row"><span class="k">11/12〜11/16</span><span>漢字30分（11/12〜14は1日3回分、11/15で1周目を終え、11/16は×をつけた語の2周目）</span></div>
+        </div>
+        <p>20分しか取れない日は速単を優先します。英語の試験の方が先だからです。</p>
+      </div>
+      <div class="rule">
+        <h3>漢字マイスター 第34〜66回の進め方</h3>
+        <div class="tt">
+          <div class="tt-row"><span class="k">10/30〜11/11</span><span>第34〜46回（スキマ10分で1日1回分）</span></div>
+          <div class="tt-row"><span class="k">11/12〜11/14</span><span>第47〜55回（スキマ30分で1日3回分）</span></div>
+          <div class="tt-row"><span class="k">11/14</span><span>第56〜64回（論国の時間に1.5h）</span></div>
+          <div class="tt-row"><span class="k">11/15</span><span>第65〜66回（スキマ時間。これで1周目が終わる）</span></div>
+          <div class="tt-row"><span class="k">11/16</span><span>2周目（×をつけた語だけ、2.5h）</span></div>
+        </div>
+        <p>1回30語前後・10分の想定です。量が少なければ前倒しで進めてください。</p>
+      </div>
+      <div class="rule">
+        <h3>時間の前提</h3>
+        <ul>
+          <li>平日は放課後に4h、土日は8h、試験日は午後に6h</li>
+          <li>11/4は合奏を欠席して4h</li>
+          <li>試験の前日は、翌日の試験科目だけをやる（スキマ時間の漢字は毎日続ける）</li>
+          <li>予備4.5hは11/8〜11/11に置いてある遅れの回収用。余ったら数Cの演習に回す</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <h3>範囲が出たら調整するもの</h3>
+        <ul>
+          <li>数B：正式な範囲（今はベクトルの応用と確率統計の想定）</li>
+          <li>地学：気象がどこまで入るか、11/4の実験が入るか</li>
+          <li>法律：範囲と判例が出るか（11/6・11/10の授業で先生に確認）</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <h3>アプリとして使う</h3>
+        <ul>
+          <li>タスクやスキマ時間の行をタップすると、チェックがつきます</li>
+          <li>iPhoneはSafariの共有ボタンから「ホーム画面に追加」。一度開けば電波がなくても見られます</li>
+          <li>チェックはこの端末にだけ保存されます。iPhoneではSafariとホーム画面のアプリで保存先が別なので、どちらか一方で使ってください</li>
+        </ul>
+      </div>
+      <p class="foot">10/30時点の計画。範囲が変わったら配分を見直します。</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var KEY='kimatsu-2026-2gakki-v1';
+  var TOTAL=82;
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+  function fmt(x){return Math.round(x*10)/10+''}
+  function pad(n){return (n<10?'0':'')+n}
+  var state=load();
+
+  var now=new Date();
+  var today=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  var todayUTC=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+
+  // 今日のカードに印をつけ、上に複製する
+  var card=document.querySelector('#schedule .day[data-date="'+today+'"]');
+  if(card){
+    card.classList.add('is-today');
+    var clone=card.cloneNode(true);
+    clone.removeAttribute('id');
+    var sec=document.getElementById('today');
+    sec.querySelector('.today-slot').appendChild(clone);
+    sec.hidden=false;
+    document.getElementById('nav-today').hidden=false;
+  }
+
+  function update(){
+    var done=0, per={};
+    var inputs=document.querySelectorAll('#schedule input[data-tid]');
+    for(var i=0;i<inputs.length;i++){
+      var el=inputs[i];
+      if(state[el.getAttribute('data-tid')]){
+        var h=parseFloat(el.getAttribute('data-h'))||0, s=el.getAttribute('data-sub');
+        done+=h; per[s]=(per[s]||0)+h;
+      }
+    }
+    document.getElementById('prog-done').textContent=fmt(done);
+    document.getElementById('prog-bar').style.width=Math.min(100,done/TOTAL*100)+'%';
+    var rows=document.querySelectorAll('.alloc-row[data-sub]');
+    for(var j=0;j<rows.length;j++){
+      var r=rows[j], plan=parseFloat(r.getAttribute('data-h')), d=per[r.getAttribute('data-sub')]||0;
+      r.querySelector('.alloc-done').style.width=Math.min(100,d/plan*100)+'%';
+      r.querySelector('.alloc-val').textContent=fmt(d)+'/'+fmt(plan)+'h';
+    }
+    var days=document.querySelectorAll('.day');
+    for(var k=0;k<days.length;k++){
+      var ins=days[k].querySelectorAll('input[data-tid]'), c=0;
+      if(!ins.length) continue;
+      for(var m=0;m<ins.length;m++){ if(ins[m].checked) c++; }
+      var p=days[k].querySelector('.day-prog');
+      if(p) p.textContent=c+'/'+ins.length;
+      days[k].classList.toggle('is-done', c===ins.length);
+    }
+  }
+  function apply(){
+    var all=document.querySelectorAll('input[data-tid]');
+    for(var i=0;i<all.length;i++){ all[i].checked=!!state[all[i].getAttribute('data-tid')]; }
+    update();
+  }
+  document.addEventListener('change',function(ev){
+    var t=ev.target;
+    if(!t.matches||!t.matches('input[data-tid]')) return;
+    var id=t.getAttribute('data-tid');
+    if(t.checked) state[id]=1; else delete state[id];
+    save(state);
+    var same=document.querySelectorAll('input[data-tid="'+id+'"]');
+    for(var i=0;i<same.length;i++){ same[i].checked=t.checked; }
+    update();
+  });
+  apply();
+
+  // 次の試験までの日数
+  var exams=[
+    ['2026-11-12','11/12','（木）英コミュIII・数学C(b)'],
+    ['2026-11-13','11/13','（金）地学基礎・法律入門'],
+    ['2026-11-16','11/16','（月）数学B・日本語日本文化I'],
+    ['2026-11-17','11/17','（火）論理国語']
+  ];
+  var cd=document.getElementById('countdown'), shown=false;
+  for(var i=0;i<exams.length && !shown;i++){
+    var q=exams[i][0].split('-');
+    var diff=Math.round((Date.UTC(+q[0],+q[1]-1,+q[2])-todayUTC)/86400000);
+    if(diff>=0){
+      shown=true;
+      if(diff===0){
+        cd.innerHTML='<span class="c-label">今日は試験</span><span class="c-sub">'+exams[i][1]+exams[i][2]+'</span>';
+      }else{
+        cd.innerHTML='<span class="c-label">'+(i===0?'最初の試験まで':'次の試験まで')+'</span><span class="c-unit">あと</span><span class="c-num">'+diff+'</span><span class="c-unit">日</span><span class="c-sub">'+exams[i][1]+exams[i][2]+'</span>';
+      }
+    }
+  }
+  if(!shown) cd.innerHTML='<span class="c-label">期末試験は終了しました</span>';
+
+  // オフライン用（このフォルダの中だけを扱う）
+  if('serviceWorker' in navigator && location.protocol==='https:'){
+    window.addEventListener('load',function(){ navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(function(){}); });
+  }
+})();
+</script>
+</body>
+</html>
