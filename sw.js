@@ -1,6 +1,6 @@
 /* 資金管理：オフライン用
    ネットにつながるときは最新版を読み込み、つながらない・遅いときは保存しておいた版で開く */
-const CACHE = 'shikin-v3';
+const CACHE = 'shikin-v4';
 const CORE = ['./finance.html', './icon.png'];
 
 self.addEventListener('install', (e) => {
