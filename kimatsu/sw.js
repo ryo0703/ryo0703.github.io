@@ -1,7 +1,7 @@
 /* 期末試験 勉強計画：オフライン用
    このフォルダ（/kimatsu/）の中だけを扱う。資金管理アプリのキャッシュには触れない。
    ネットにつながるときは最新版を読み込み、つながらない・遅いときは保存しておいた版で開く */
-const CACHE = 'kimatsu-v1';
+const CACHE = 'kimatsu-v2';
 const FONT_CACHE = 'kimatsu-fonts-v1';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
